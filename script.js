@@ -33,28 +33,6 @@ function init() {
 // GRÁFICO 1
 function drawPieChart() {
 
-    var data = google.visualization.arrayToDataTable([
-        ['Tipo', 'Cantidad'],
-        ['Películas', 6131],
-        ['Series', 2676]
-    ]);
-
-    var options = {
-        pieHole: 0.5,
-        colors: ['#E50914', '#666666'],
-        backgroundColor: 'transparent',
-        legendTextStyle: { color: 'white' },
-        titleTextStyle: { color: 'white' },
-        pieSliceText: 'percentage'
-    };
-
-    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-    chart.draw(data, options);
-}
-function drawLineChart() {
-
-  function drawPieChart() {
-
     let movies = 0;
     let series = 0;
 
