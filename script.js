@@ -1,8 +1,23 @@
+let netflixData = [];
+
+function loadCSV() {
+    Papa.parse("netflix_titles.csv", {
+        download: true,
+        header: true,
+        complete: function(results) {
+            netflixData = results.data;
+            console.log("Datos cargados:", netflixData);
+
+            // 👇 aquí llamamos los gráficos con datos reales
+            init();
+        }
+    });
+}
 // Cargar Google Charts
 google.charts.load('current', { packages: ['corechart'] });
 
 // Callback general
-google.charts.setOnLoadCallback(init);
+google.charts.setOnLoadCallback(loadCSV);
 
 function init() {
     drawPieChart();
@@ -34,27 +49,32 @@ function drawPieChart() {
 }
 function drawLineChart() {
 
+  function drawPieChart() {
+
+    let movies = 0;
+    let series = 0;
+
+    netflixData.forEach(item => {
+        if (item.type === "Movie") movies++;
+        else if (item.type === "TV Show") series++;
+    });
+
     var data = google.visualization.arrayToDataTable([
-        ['Año', 'Películas', 'Series'],
-        ['2016', 500, 200],
-        ['2017', 800, 300],
-        ['2018', 1200, 500],
-        ['2019', 1600, 700],
-        ['2020', 2000, 900],
-        ['2021', 1800, 850]
+        ['Tipo', 'Cantidad'],
+        ['Películas', movies],
+        ['Series', series]
     ]);
 
     var options = {
+        pieHole: 0.5,
+        colors: ['#E50914', '#666666'],
         backgroundColor: 'transparent',
         legendTextStyle: { color: 'white' },
         titleTextStyle: { color: 'white' },
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white' } },
-        colors: ['#E50914', '#aaaaaa'],
-        tooltip: { textStyle: { color: '#000' } }
+        pieSliceText: 'percentage'
     };
 
-    var chart = new google.visualization.LineChart(document.getElementById('linechart'));
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
     chart.draw(data, options);
 }
 // 6. GRÁFICO 3 (AQUÍ 👇)
@@ -130,6 +150,7 @@ function drawGenreChart() {
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
         colors: ['#E50914', '#999999']
+        
     };
 
     var chart = new google.visualization.ColumnChart(document.getElementById('genrechart'));
