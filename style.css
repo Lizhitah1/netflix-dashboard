@@ -1,0 +1,39 @@
+body {
+    background: #141414;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(90deg, #E50914, #b20710);
+    padding: 40px;
+}
+
+/* TARJETAS */
+.card-custom {
+    background: #1f1f1f;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.5);
+    height: 100%;
+}
+
+/* TITULOS */
+h5 {
+    margin-bottom: 15px;
+}
+
+/* INSIGHT */
+.insight {
+    font-size: 0.9rem;
+    color: #b3b3b3;
+    margin-top: 10px;
+}
+
+/* SELECT */
+select {
+    background-color: #333;
+    color: white;
+    border: none;
+}
