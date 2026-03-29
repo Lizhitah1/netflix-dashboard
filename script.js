@@ -1,14 +1,18 @@
+console.log("🚀 SCRIPT CARGADO");
 let netflixData = [];
 
 function loadCSV() {
-    Papa.parse("netflix_titles.csv", {
+    console.log("📊 Intentando cargar CSV...");
+
+    Papa.parse("./netflix_titles.csv", {
         download: true,
         header: true,
         complete: function(results) {
-            netflixData = results.data;
-            console.log("Datos cargados:", netflixData);
+            console.log("✅ CSV cargado");
+            console.log("📦 Total registros:", results.data.length);
 
-            // 👇 aquí llamamos los gráficos con datos reales
+            netflixData = results.data;
+
             init();
         }
     });
