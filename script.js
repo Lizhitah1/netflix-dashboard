@@ -114,21 +114,23 @@ function drawCountryChart() {
 
     let countryCount = {};
 
-    netflixData.forEach(item => {
-        if (!item.country) return;
+netflixData.forEach(item => {
+    if (!item.country) return;
 
-        let countries = item.country.split(",");
+    let countries = item.country.split(",");
 
-        countries.forEach(country => {
-            let c = country.trim();
+    countries.forEach(country => {
+        let c = country.trim();
 
-            if (!countryCount[c]) {
-                countryCount[c] = 0;
-            }
+        if (c === "") return; // 🔥 evita vacíos
 
-            countryCount[c]++;
-        });
+        if (!countryCount[c]) {
+            countryCount[c] = 0;
+        }
+
+        countryCount[c]++;
     });
+});
 
     // Convertir a array y ordenar
     let sortedCountries = Object.entries(countryCount)
