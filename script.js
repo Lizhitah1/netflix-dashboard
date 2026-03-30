@@ -1,11 +1,75 @@
-console.log("🔥 NUEVA VERSION GENEROS");
+console.log("🚀 VERSION FINAL FUNCIONAL");
+
 let netflixData = [];
 
+// =========================
+// CARGA CSV
+// =========================
+function loadCSV() {
+
+    Papa.parse("./netflix_titles.csv", {
+        download: true,
+        header: true,
+        complete: function(results) {
+
+            netflixData = results.data;
+            init();
+        }
+    });
+}
+
+// Google Charts
+google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(loadCSV);
+
+// =========================
+// INIT
+// =========================
+function init() {
+    drawKPIs();
+    drawPieChart();
+    drawLineChart();
+    drawCountryChart();
+    drawGenreChart();
+}
+
+// =========================
+// KPI
+// =========================
+function drawKPIs() {
+
+    let total = netflixData.length;
+
+    let countries = new Set();
+    let years = [];
+
+    netflixData.forEach(item => {
+
+        if (item.country) {
+            item.country.split(",").forEach(c => {
+                countries.add(c.trim());
+            });
+        }
+
+        if (item.release_year) {
+            years.push(Number(item.release_year));
+        }
+    });
+
+    let maxYear = Math.max(...years);
+
+    animateValue("totalTitles", 0, total, 800);
+    animateValue("totalCountries", 0, countries.size, 800);
+    animateValue("latestYear", 0, maxYear, 800);
+}
+
+// =========================
+// ANIMACIÓN KPI
+// =========================
 function animateValue(id, start, end, duration) {
 
     let obj = document.getElementById(id);
-
-    if (!obj) return; // seguridad
+    if (!obj) return;
 
     let range = end - start;
     let current = start;
@@ -16,43 +80,13 @@ function animateValue(id, start, end, duration) {
         current += increment;
         obj.innerText = current.toLocaleString();
 
-        if (current == end) {
-            clearInterval(timer);
-        }
+        if (current == end) clearInterval(timer);
     }, stepTime);
 }
 
-function loadCSV() {
-    console.log("📊 Intentando cargar CSV...");
-
-    Papa.parse("./netflix_titles.csv", {
-        download: true,
-        header: true,
-        complete: function(results) {
-            console.log("✅ CSV cargado");
-            console.log("📦 Total registros:", results.data.length);
-
-            netflixData = results.data;
-
-            init();
-        }
-    });
-}
-// Cargar Google Charts
-google.charts.load('current', { packages: ['corechart'] });
-
-// Callback general
-google.charts.setOnLoadCallback(loadCSV);
-
-function init() {
-    drawKPIs();
-    drawPieChart();
-    drawLineChart();
-    drawCountryChart();
-    drawGenreChart();
-}
-
-// GRÁFICO 1
+// =========================
+// PIE CHART
+// =========================
 function drawPieChart() {
 
     let movies = 0;
@@ -60,32 +94,37 @@ function drawPieChart() {
 
     netflixData.forEach(item => {
         if (item.type === "Movie") movies++;
-        else if (item.type === "TV Show") series++;
+        if (item.type === "TV Show") series++;
     });
 
-    var data = google.visualization.arrayToDataTable([
+    let data = google.visualization.arrayToDataTable([
         ['Tipo', 'Cantidad'],
         ['Películas', movies],
         ['Series', series]
     ]);
 
-    var options = {
+    let options = {
         pieHole: 0.5,
         colors: ['#E50914', '#666666'],
         backgroundColor: 'transparent',
-        legendTextStyle: { color: 'white' },
-        titleTextStyle: { color: 'white' },
-        pieSliceText: 'percentage'
+        pieSliceText: 'percentage',
+        chartArea: { width: '80%', height: '80%' }
     };
 
-    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    let chart = new google.visualization.PieChart(
+        document.getElementById('piechart')
+    );
+
     chart.draw(data, options);
 }
+
+// =========================
+// LINE CHART (SIN CEROS)
+// =========================
 function drawLineChart() {
 
     let years = {};
 
-    // 🔹 Agrupar datos
     netflixData.forEach(item => {
 
         let year = item.release_year;
@@ -101,75 +140,102 @@ function drawLineChart() {
         if (type === "TV Show") years[year]["TV Show"]++;
     });
 
-    // 🔥 Data con tooltip PRO
     let dataArray = [
-        ['Año', 'Películas', 'Series', { role: 'tooltip', p: { html: true } }]
+        ['Año', 'Películas', 'Series']
     ];
 
     Object.keys(years)
-        .filter(year => year && (years[year].Movie > 0 || years[year]["TV Show"] > 0))
+        .filter(y => years[y].Movie > 0 || years[y]["TV Show"] > 0)
         .sort((a, b) => a - b)
         .forEach(year => {
 
-            let movies = years[year].Movie;
-            let series = years[year]["TV Show"];
-            let total = movies + series;
-
             dataArray.push([
                 Number(year),
-                movies,
-                series,
-                `<div style="padding:10px">
-                    <b>${year}</b><br>
-                    🎬 Películas: ${movies.toLocaleString()}<br>
-                    📺 Series: ${series.toLocaleString()}<br>
-                    🔥 Total: ${total.toLocaleString()}
-                </div>`
+                years[year].Movie,
+                years[year]["TV Show"]
             ]);
         });
 
-    var data = google.visualization.arrayToDataTable(dataArray);
+    let data = google.visualization.arrayToDataTable(dataArray);
 
-    var options = {
+    let options = {
         backgroundColor: 'transparent',
-
-        legend: {
-            textStyle: { color: 'white' }
-        },
-
-        hAxis: {
-            textStyle: { color: 'white' }
-        },
-
-        vAxis: {
-            textStyle: { color: 'white' },
-            format: 'short' // 🔥 1K, 2K
-        },
-
         colors: ['#E50914', '#aaaaaa'],
-
-        chartArea: {
-            width: '80%',
-            height: '70%'
-        },
-
-        tooltip: { isHtml: true },
-
-        animation: {
-            startup: true,
-            duration: 1000,
-            easing: 'out'
-        }
+        chartArea: { width: '80%', height: '70%' },
+        hAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white' }, format: 'short' }
     };
 
-    var chart = new google.visualization.LineChart(
+    let chart = new google.visualization.LineChart(
         document.getElementById('linechart')
     );
 
     chart.draw(data, options);
 }
-// 6. GRÁFICO 3 (AQUÍ 👇)}}
-// 7. GRÁFICO 4 (AQUÍ 👇
+
+// =========================
+// COUNTRY CHART
+// =========================
+function drawCountryChart() {
+
+    let topN = parseInt(document.getElementById("topN").value);
+
+    let countryCount = {};
+
+    netflixData.forEach(item => {
+
+        if (!item.country) return;
+
+        item.country.split(",").forEach(c => {
+
+            let country = c.trim();
+            if (!country) return;
+
+            countryCount[country] = (countryCount[country] || 0) + 1;
+        });
+    });
+
+    let sorted = Object.entries(countryCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, topN);
+
+    let dataArray = [['País', 'Cantidad']];
+
+    sorted.slice().reverse().forEach(([country, count]) => {
+        dataArray.push([country, count]);
+    });
+
+    let data = google.visualization.arrayToDataTable(dataArray);
+
+    let options = {
+        backgroundColor: 'transparent',
+        legend: 'none',
+        colors: ['#E50914'],
+        chartArea: { left: 150, width: '70%' }
+    };
+
+    let chart = new google.visualization.BarChart(
+        document.getElementById('countrychart')
+    );
+
+    chart.draw(data, options);
+
+    // Insight dinámico
+    let insight = document.querySelector("#countrychart + .insight");
+
+    if (sorted.length > 0) {
+
+        let topCountry = sorted[0][0];
+        let totalTop = sorted.reduce((sum, item) => sum + item[1], 0);
+
+        insight.innerText =
+            `${topCountry} lidera la producción. El Top ${topN} concentra ${totalTop.toLocaleString()} títulos.`;
+    }
+}
+
+// =========================
+// GENRE CHART
+// =========================
 function drawGenreChart() {
 
     let filter = document.getElementById("typeFilter").value;
@@ -192,167 +258,42 @@ function drawGenreChart() {
         });
     });
 
-    // 🔥 Orden tipo ranking (TOP)
     let sorted = Object.entries(genreCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 7);
 
-    // 🔥 Agregamos columna de anotaciones (labels)
     let dataArray = [['Género', 'Cantidad', { role: 'annotation' }]];
 
     sorted.forEach(([genre, count]) => {
-        dataArray.push([genre, count, count]); // 👈 muestra valor en barra
+        dataArray.push([genre, count, count]);
     });
 
-    if (dataArray.length <= 1) {
-        document.getElementById('genrechart').innerHTML =
-            "<p style='color:white'>No hay datos para mostrar</p>";
-        return;
-    }
+    let data = google.visualization.arrayToDataTable(dataArray);
 
-    var data = google.visualization.arrayToDataTable(dataArray);
-
-    var options = {
+    let options = {
         backgroundColor: 'transparent',
         legend: 'none',
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white', fontSize: 11 } },
         colors: ['#E50914'],
-        chartArea: { left: 180, width: '65%' },
-        annotations: {
-            textStyle: {
-                color: 'white',
-                fontSize: 12,
-                bold: true
-            }
-        }
+        chartArea: { left: 180, width: '65%' }
     };
 
-    var chart = new google.visualization.BarChart(
+    let chart = new google.visualization.BarChart(
         document.getElementById('genrechart')
     );
 
     chart.draw(data, options);
 
-    // 🎯 INSIGHT DINÁMICO
+    // Insight dinámico
     let insight = document.getElementById("genreInsight");
 
-if (sorted.length > 0) {
-    let topGenre = sorted[0][0];
-
-    if (filter === "Movie") {
-        insight.innerHTML = `Las películas están dominadas por el género <span class="highlight">${topGenre}</span>.`;
-    } 
-    else if (filter === "TV Show") {
-        insight.innerHTML = `Las series destacan principalmente en <span class="highlight">${topGenre}</span>.`;
-    } 
-    else {
-        insight.innerHTML = `A nivel general, el género <span class="highlight">${topGenre}</span> lidera el catálogo de Netflix.`;
+    if (sorted.length > 0) {
+        let topGenre = sorted[0][0];
+        insight.innerHTML = `El género <span class="highlight">${topGenre}</span> lidera el catálogo.`;
     }
 }
-}
-function drawCountryChart() {
 
-    let topN = document.getElementById("topN").value;
-
-    let countryCount = {};
-
-    // 🔹 Contar países
-    netflixData.forEach(item => {
-
-        if (!item.country) return;
-
-        item.country.split(",").forEach(country => {
-
-            let c = country.trim();
-            if (!c) return;
-
-            if (!countryCount[c]) countryCount[c] = 0;
-
-            countryCount[c]++;
-        });
-    });
-
-    // 🔹 Ordenar y tomar Top N
-    let sortedCountries = Object.entries(countryCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, topN);
-
-    // 🔹 Preparar datos para gráfico
-    let dataArray = [['País', 'Cantidad']];
-
-    sortedCountries
-        .slice() // evitar mutar original
-        .reverse()
-        .forEach(([country, count]) => {
-            dataArray.push([country, count]);
-        });
-
-    var data = google.visualization.arrayToDataTable(dataArray);
-
-    var options = {
-        backgroundColor: 'transparent',
-        legend: 'none',
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white' } },
-        colors: ['#ff4d4d','#ff1a1a','#cc0000','#990000','#660000']
-        chartArea: { left: 150, width: '70%' },
-        bars: 'horizontal',
-
-        // 🔥 Tooltip PRO
-        tooltip: {
-            textStyle: { color: 'white' },
-            showColorCode: true
-        }
-    };
-
-    var chart = new google.visualization.BarChart(
-        document.getElementById('countrychart')
-    );
-
-    chart.draw(data, options);
-
-    // 🔥 INSIGHT DINÁMICO PRO
-    let insight = document.querySelector("#countrychart + .insight");
-
-    if (sortedCountries.length > 0) {
-
-        let topCountry = sortedCountries[0][0];
-        let topValue = sortedCountries[0][1];
-
-        let totalTop = sortedCountries.reduce((sum, item) => sum + item[1], 0);
-
-        insight.innerText = `${topCountry} lidera la producción con ${topValue.toLocaleString()} títulos. Al analizar el Top ${topN}, estos países concentran ${totalTop.toLocaleString()} contenidos, evidenciando una fuerte concentración geográfica del catálogo de Netflix.`;
-    }
-}
-function drawKPIs() {
-
-    let total = netflixData.length;
-
-    let countries = new Set();
-    let years = [];
-
-    netflixData.forEach(item => {
-        if (item.country) {
-            item.country.split(",").forEach(c => countries.add(c.trim()));
-        }
-
-        if (item.release_year) {
-            years.push(parseInt(item.release_year));
-        }
-    });
-
-    let maxYear = Math.max(...years);
-
-    animateValue("totalTitles", 0, total, 1000);
-    animateValue("totalCountries", 0, countries.size, 1000);
-    animateValue("latestYear", 0, maxYear, 1000);
-}
-
-
+// =========================
+// EVENTOS
+// =========================
+document.getElementById("topN").addEventListener("change", drawCountryChart);
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
-document.getElementById("topN").addEventListener("change", function () {
-    drawCountryChart();
-});
-
-
