@@ -26,7 +26,7 @@ google.charts.setOnLoadCallback(loadCSV);
 function init() {
     drawPieChart();
     drawLineChart();
-    // drawCountryChart();
+    drawCountryChart();
     drawGenreChart();
 }
 
@@ -107,93 +107,7 @@ function drawLineChart() {
     var chart = new google.visualization.LineChart(document.getElementById('linechart'));
     chart.draw(data, options);
 }
-// 6. GRÁFICO 3 (AQUÍ 👇)
-function drawGenreChart() {
-
-    let filter = document.getElementById("typeFilter").value;
-
-    let genreCount = {};
-
-    // 🔹 Contar géneros
-    netflixData.forEach(item => {
-
-        if (!item.listed_in) return;
-
-        let genres = item.listed_in.split(",");
-
-        genres.forEach(genre => {
-
-            let g = genre.trim();
-            if (g === "") return;
-
-            if (!genreCount[g]) {
-                genreCount[g] = { Movie: 0, "TV Show": 0 };
-            }
-
-            if (item.type === "Movie") genreCount[g].Movie++;
-            if (item.type === "TV Show") genreCount[g]["TV Show"]++;
-        });
-    });
-
-    let sortedGenres;
-
-    // 🔥 Lógica según filtro (UNA sola métrica)
-    if (filter === "Movie") {
-        sortedGenres = Object.entries(genreCount)
-            .sort((a, b) => b[1].Movie - a[1].Movie)
-            .slice(0, 7);
-    } 
-    else if (filter === "TV Show") {
-        sortedGenres = Object.entries(genreCount)
-            .sort((a, b) => b[1]["TV Show"] - a[1]["TV Show"])
-            .slice(0, 7);
-    } 
-    else {
-        sortedGenres = Object.entries(genreCount)
-            .sort((a, b) => 
-                (b[1].Movie + b[1]["TV Show"]) - (a[1].Movie + a[1]["TV Show"])
-            )
-            .slice(0, 7);
-    }
-
-    // 🔹 Mejor orden visual
-    sortedGenres.reverse();
-
-    // 🔹 Dataset SIEMPRE de una sola columna
-    let dataArray = [['Género', 'Cantidad']];
-
-    sortedGenres.forEach(([genre, counts]) => {
-
-        let value;
-
-        if (filter === "Movie") {
-            value = counts.Movie;
-        } 
-        else if (filter === "TV Show") {
-            value = counts["TV Show"];
-        } 
-        else {
-            value = counts.Movie + counts["TV Show"];
-        }
-
-        dataArray.push([genre, value]);
-    });
-
-    var data = google.visualization.arrayToDataTable(dataArray);
-
-    var options = {
-        backgroundColor: 'transparent',
-        legend: 'none', // 👈 clave (no hay comparación)
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white', fontSize: 11 } },
-        colors: ['#E50914'],
-        chartArea: { left: 250, width: '60%' },
-        bars: 'horizontal'
-    };
-
-    var chart = new google.visualization.BarChart(document.getElementById('genrechart'));
-    chart.draw(data, options);
-}
+// 6. GRÁFICO 3 (AQUÍ 👇)}
 function drawGenreChart() {
 
     let filter = document.getElementById("typeFilter").value;
