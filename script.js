@@ -160,18 +160,19 @@ function drawGenreChart() {
 
     let filter = document.getElementById("typeFilter").value;
 
-    console.log("🎯 Filtro:", filter);
-
     let genreCount = {};
 
     netflixData.forEach(item => {
 
         if (!item.listed_in || !item.type) return;
 
-        // 🔥 Manejo flexible del filtro
-        if (filter !== "Todos" && filter !== "All" && item.type !== filter) return;
+        // 🔥 Filtro seguro (sin depender de "Todos")
+        if (filter === "Movie" && item.type !== "Movie") return;
+        if (filter === "TV Show" && item.type !== "TV Show") return;
 
-        item.listed_in.split(",").forEach(g => {
+        let genres = item.listed_in.split(",");
+
+        genres.forEach(g => {
 
             let genre = g.trim();
             if (!genre) return;
@@ -180,6 +181,7 @@ function drawGenreChart() {
         });
     });
 
+    // 🔥 Ordenar top 7
     let sorted = Object.entries(genreCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 7);
@@ -190,11 +192,10 @@ function drawGenreChart() {
         dataArray.push([genre, Number(count)]);
     });
 
-    console.log("🎬 Géneros FINAL:", dataArray);
-
-    // 🔥 VALIDACIÓN CLAVE
+    // 🚨 Protección contra vacío
     if (dataArray.length <= 1) {
-        console.error("⚠️ No hay datos para el gráfico");
+        document.getElementById('genrechart').innerHTML =
+            "<p style='color:white'>No hay datos para mostrar</p>";
         return;
     }
 

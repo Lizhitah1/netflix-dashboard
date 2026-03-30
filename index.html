@@ -75,26 +75,24 @@
             </div>
 
             <!-- GRÁFICO 4 -->
-            <div class="col-md-6">
-                <div class="card-custom">
-                    <h5>Géneros más frecuentes</h5>
+<!-- GRÁFICO 4 -->
+<div class="col-md-6">
+    <div class="card-custom">
+        <h5>Géneros más frecuentes</h5>
 
-                    <select id="typeFilter">
-    <option value="Todos">Todos</option>
-    <option value="Movie">Películas</option>
-    <option value="TV Show">Series</option>
-</select>
+        <select id="typeFilter" onchange="drawGenreChart()">
+            <option value="Todos">Todos</option>
+            <option value="Movie">Películas</option>
+            <option value="TV Show">Series</option>
+        </select>
 
-                    <div id="genrechart"></div>
-                    <p class="insight">
-El género drama concentra la mayor parte del catálogo, seguido por comedia y acción, evidenciando una preferencia por contenido narrativo.</p>
-                </div>
-            </div>
+        <div id="genrechart"></div>
 
-        </div>
-
+        <p class="insight">
+            El género drama concentra la mayor parte del catálogo, seguido por comedia y acción, evidenciando una preferencia por contenido narrativo.
+        </p>
     </div>
-
+</div>
     <!-- JS -->
     <script src="script.js?v=10"></script>
 
