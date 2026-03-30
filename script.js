@@ -166,13 +166,10 @@ function drawGenreChart() {
 
         if (!item.listed_in || !item.type) return;
 
-        // 🔥 Filtro seguro (sin depender de "Todos")
         if (filter === "Movie" && item.type !== "Movie") return;
         if (filter === "TV Show" && item.type !== "TV Show") return;
 
-        let genres = item.listed_in.split(",");
-
-        genres.forEach(g => {
+        item.listed_in.split(",").forEach(g => {
 
             let genre = g.trim();
             if (!genre) return;
@@ -181,18 +178,18 @@ function drawGenreChart() {
         });
     });
 
-    // 🔥 Ordenar top 7
+    // 🔥 Orden tipo ranking (TOP)
     let sorted = Object.entries(genreCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 7);
 
-    let dataArray = [['Género', 'Cantidad']];
+    // 🔥 Agregamos columna de anotaciones (labels)
+    let dataArray = [['Género', 'Cantidad', { role: 'annotation' }]];
 
     sorted.forEach(([genre, count]) => {
-        dataArray.push([genre, Number(count)]);
+        dataArray.push([genre, count, count]); // 👈 muestra valor en barra
     });
 
-    // 🚨 Protección contra vacío
     if (dataArray.length <= 1) {
         document.getElementById('genrechart').innerHTML =
             "<p style='color:white'>No hay datos para mostrar</p>";
@@ -207,7 +204,14 @@ function drawGenreChart() {
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white', fontSize: 11 } },
         colors: ['#E50914'],
-        chartArea: { left: 180, width: '65%' }
+        chartArea: { left: 180, width: '65%' },
+        annotations: {
+            textStyle: {
+                color: 'white',
+                fontSize: 12,
+                bold: true
+            }
+        }
     };
 
     var chart = new google.visualization.BarChart(
@@ -215,6 +219,23 @@ function drawGenreChart() {
     );
 
     chart.draw(data, options);
+
+    // 🎯 INSIGHT DINÁMICO
+    let insight = document.querySelector("#genrechart").nextElementSibling;
+
+    if (sorted.length > 0) {
+        let topGenre = sorted[0][0];
+
+        if (filter === "Movie") {
+            insight.innerText = `Las películas están dominadas por el género ${topGenre}, evidenciando una fuerte preferencia en este tipo de contenido.`;
+        } 
+        else if (filter === "TV Show") {
+            insight.innerText = `Las series destacan principalmente en ${topGenre}, mostrando tendencias específicas en contenido episódico.`;
+        } 
+        else {
+            insight.innerText = `A nivel general, el género ${topGenre} lidera el catálogo de Netflix, consolidándose como el más representativo.`;
+        }
+    }
 }
 
 
