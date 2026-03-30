@@ -108,64 +108,13 @@ function drawLineChart() {
     chart.draw(data, options);
 }
 // 6. GRÁFICO 3 (AQUÍ 👇)
-function drawCountryChart() {
-
-    let topN = parseInt(document.getElementById("topN").value);
-
-    let countryCount = {};
-
-netflixData.forEach(item => {
-    if (!item.country) return;
-
-    let countries = item.country.split(",");
-
-    countries.forEach(country => {
-        let c = country.trim();
-
-        if (c === "") return; // 🔥 evita vacíos
-
-        if (!countryCount[c]) {
-            countryCount[c] = 0;
-        }
-
-        countryCount[c]++;
-    });
-});
-
-    // Convertir a array y ordenar
-    let sortedCountries = Object.entries(countryCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, topN);
-
-    let dataArray = [['País', 'Cantidad']];
-
-    sortedCountries.forEach(([country, count]) => {
-        dataArray.push([country, count]);
-    });
-
-    console.log("🌍 Top países:", dataArray);
-
-    var data = google.visualization.arrayToDataTable(dataArray);
-
-    var options = {
-        backgroundColor: 'transparent',
-        legend: { textStyle: { color: 'white' } },
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white' } },
-        colors: ['#E50914'],
-        chartArea: { left: 120, width: '70%' }
-    };
-
-    var chart = new google.visualization.BarChart(document.getElementById('barchart'));
-    chart.draw(data, options);
-}
 function drawGenreChart() {
 
     let filter = document.getElementById("typeFilter").value;
 
     let genreCount = {};
 
-    // 🔹 Contar géneros respetando categorías reales
+    // 🔹 Contar géneros respetando dataset original
     netflixData.forEach(item => {
 
         if (!item.listed_in) return;
@@ -188,48 +137,60 @@ function drawGenreChart() {
 
     let sortedGenres;
 
-    // 🔥 Lógica correcta según filtro
+    // 🔥 Lógica correcta por filtro
     if (filter === "Movie") {
         sortedGenres = Object.entries(genreCount)
             .sort((a, b) => b[1].Movie - a[1].Movie)
-            .slice(0, 10);
+            .slice(0, 7);
     } 
     else if (filter === "TV Show") {
         sortedGenres = Object.entries(genreCount)
             .sort((a, b) => b[1]["TV Show"] - a[1]["TV Show"])
-            .slice(0, 10);
+            .slice(0, 7);
     } 
     else {
-        // 🔥 "Todos" = volumen total
         sortedGenres = Object.entries(genreCount)
             .sort((a, b) => 
                 (b[1].Movie + b[1]["TV Show"]) - (a[1].Movie + a[1]["TV Show"])
             )
-            .slice(0, 10);
+            .slice(0, 7);
     }
 
-    //  Invertir para mejor lectura en horizontal
+    // 🔥 Mejor orden visual
     sortedGenres.reverse();
 
     let dataArray;
 
-    // 🔹 Construcción dinámica del dataset
+    // 🔹 Función para limpiar nombres (SOLO VISUAL)
+    function cleanLabel(name) {
+        return name
+            .replace("International ", "Int. ")
+            .replace("TV Shows", "TV")
+            .replace("TV ", "TV ")
+            .replace("Movies", "Mov.");
+    }
+
+    // 🔹 Construcción del dataset
     if (filter === "Movie") {
         dataArray = [['Género', 'Películas']];
         sortedGenres.forEach(([genre, counts]) => {
-            dataArray.push([genre, counts.Movie]);
+            dataArray.push([cleanLabel(genre), counts.Movie]);
         });
     } 
     else if (filter === "TV Show") {
         dataArray = [['Género', 'Series']];
         sortedGenres.forEach(([genre, counts]) => {
-            dataArray.push([genre, counts["TV Show"]]);
+            dataArray.push([cleanLabel(genre), counts["TV Show"]]);
         });
     } 
     else {
         dataArray = [['Género', 'Películas', 'Series']];
         sortedGenres.forEach(([genre, counts]) => {
-            dataArray.push([genre, counts.Movie, counts["TV Show"]]);
+            dataArray.push([
+                cleanLabel(genre),
+                counts.Movie,
+                counts["TV Show"]
+            ]);
         });
     }
 
@@ -239,9 +200,9 @@ function drawGenreChart() {
         backgroundColor: 'transparent',
         legend: { textStyle: { color: 'white' } },
         hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white', fontSize: 10 } },
         colors: ['#E50914', '#999999'],
-        chartArea: { left: 220, width: '60%' }, 
+        chartArea: { left: 250, width: '55%' }, // 👈 más espacio etiquetas
         bars: 'horizontal'
     };
 
