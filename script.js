@@ -25,7 +25,6 @@ google.charts.setOnLoadCallback(loadCSV);
 
 function init() {
     drawPieChart();
-    drawLineChart();
     drawCountryChart();
     drawGenreChart();
 }
