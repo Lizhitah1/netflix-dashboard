@@ -1,4 +1,4 @@
-console.log("🚀 SCRIPT CARGADO");
+console.log("🔥 NUEVA VERSION GENEROS");
 let netflixData = [];
 
 function loadCSV() {
@@ -192,5 +192,63 @@ function drawGenreChart() {
     };
 
     var chart = new google.visualization.BarChart(document.getElementById('genrechart'));
+    chart.draw(data, options);
+}
+function drawGenreChart() {
+
+    let filter = document.getElementById("typeFilter").value;
+
+    let genreCount = {};
+
+    netflixData.forEach(item => {
+
+        if (!item.listed_in || !item.type) return;
+
+        // 🔥 SOLO cuenta el tipo seleccionado
+        if (filter !== "Todos" && item.type !== filter) return;
+
+        let genres = item.listed_in.split(",");
+
+        genres.forEach(genre => {
+
+            let g = genre.trim();
+            if (!g) return;
+
+            if (!genreCount[g]) genreCount[g] = 0;
+
+            genreCount[g]++;
+        });
+    });
+
+    // 🔹 Ordenar
+    let sortedGenres = Object.entries(genreCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 7)
+        .reverse(); // mejor visual
+
+    let dataArray = [['Género', 'Cantidad']];
+
+    sortedGenres.forEach(([genre, count]) => {
+        dataArray.push([genre, count]);
+    });
+
+    console.log("🎬 Géneros FINAL:", dataArray);
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+        backgroundColor: 'transparent',
+        legend: 'none',
+        hAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white', fontSize: 11 } },
+        colors: ['#E50914'],
+        chartArea: { left: 250, width: '60%' },
+        bars: 'horizontal'
+    };
+
+    var chart = new google.visualization.BarChart(
+        document.getElementById('genrechart')
+    );
+
     chart.draw(data, options);
 }
