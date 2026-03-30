@@ -161,45 +161,56 @@ netflixData.forEach(item => {
 }
 function drawGenreChart() {
 
-    var filter = document.getElementById("typeFilter").value;
+    let filter = document.getElementById("typeFilter").value;
 
-    var allData = [
-        ['Género', 'Películas', 'Series'],
-        ['Drama', 1800, 900],
-        ['Comedia', 1500, 700],
-        ['Acción', 1200, 300],
-        ['Documental', 500, 400],
-        ['Romance', 800, 200],
-        ['Terror', 600, 100]
-    ];
+    let genreCount = {};
 
-    var data;
+    netflixData.forEach(item => {
 
-    if (filter === "Movie") {
-        data = [['Género', 'Películas']];
-        allData.slice(1).forEach(row => {
-            data.push([row[0], row[1]]);
+        if (!item.listed_in) return;
+
+        // filtro por tipo
+        if (filter !== "All" && item.type !== filter) return;
+
+        let genres = item.listed_in.split(",");
+
+        genres.forEach(genre => {
+            let g = genre.trim();
+
+            if (g === "") return;
+
+            if (!genreCount[g]) {
+                genreCount[g] = 0;
+            }
+
+            genreCount[g]++;
         });
-    } else if (filter === "TV Show") {
-        data = [['Género', 'Series']];
-        allData.slice(1).forEach(row => {
-            data.push([row[0], row[2]]);
-        });
-    } else {
-        data = allData;
-    }
+    });
 
-    var dataTable = google.visualization.arrayToDataTable(data);
+    // ordenar y tomar top 10
+    let sortedGenres = Object.entries(genreCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+    let dataArray = [['Género', 'Cantidad']];
+
+    sortedGenres.forEach(([genre, count]) => {
+        dataArray.push([genre, count]);
+    });
+
+    console.log("🎬 Top géneros:", dataArray);
+
+    var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
         backgroundColor: 'transparent',
         legend: { textStyle: { color: 'white' } },
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
-        colors: ['#E50914', '#999999']
-        
+        colors: ['#E50914'],
+        chartArea: { left: 120, width: '70%' }
     };
 
     var chart = new google.visualization.ColumnChart(document.getElementById('genrechart'));
-    chart.draw(dataTable, options);
+    chart.draw(data, options);
 }
