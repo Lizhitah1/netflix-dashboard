@@ -221,7 +221,7 @@ function drawGenreChart() {
     chart.draw(data, options);
 
     // 🎯 INSIGHT DINÁMICO
-    let insight = document.querySelector("#genrechart").nextElementSibling;
+    let insight = document.getElementById("genreInsight");
 
     if (sorted.length > 0) {
         let topGenre = sorted[0][0];
