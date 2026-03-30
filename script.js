@@ -1,6 +1,27 @@
 console.log("🔥 NUEVA VERSION GENEROS");
 let netflixData = [];
 
+function animateValue(id, start, end, duration) {
+
+    let obj = document.getElementById(id);
+
+    if (!obj) return; // seguridad
+
+    let range = end - start;
+    let current = start;
+    let increment = end > start ? 1 : -1;
+    let stepTime = Math.abs(Math.floor(duration / range));
+
+    let timer = setInterval(() => {
+        current += increment;
+        obj.innerText = current.toLocaleString();
+
+        if (current == end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+
 function loadCSV() {
     console.log("📊 Intentando cargar CSV...");
 
@@ -238,35 +259,85 @@ if (sorted.length > 0) {
     }
 }
 }
+function drawCountryChart() {
 
+    let topN = document.getElementById("topN").value;
+
+    let countryCount = {};
+
+    // 🔹 Contar países
+    netflixData.forEach(item => {
+
+        if (!item.country) return;
+
+        item.country.split(",").forEach(country => {
+
+            let c = country.trim();
+            if (!c) return;
+
+            if (!countryCount[c]) countryCount[c] = 0;
+
+            countryCount[c]++;
+        });
+    });
+
+    // 🔹 Ordenar y tomar Top N
+    let sortedCountries = Object.entries(countryCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, topN);
+
+    // 🔹 Preparar datos para gráfico
+    let dataArray = [['País', 'Cantidad']];
+
+    sortedCountries
+        .slice() // evitar mutar original
+        .reverse()
+        .forEach(([country, count]) => {
+            dataArray.push([country, count]);
+        });
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+        backgroundColor: 'transparent',
+        legend: 'none',
+        hAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white' } },
+        colors: ['#E50914'],
+        chartArea: { left: 150, width: '70%' },
+        bars: 'horizontal',
+
+        // 🔥 Tooltip PRO
+        tooltip: {
+            textStyle: { color: 'white' },
+            showColorCode: true
+        }
+    };
+
+    var chart = new google.visualization.BarChart(
+        document.getElementById('countrychart')
+    );
+
+    chart.draw(data, options);
+
+    // 🔥 INSIGHT DINÁMICO PRO
+    let insight = document.querySelector("#countrychart + .insight");
+
+    if (sortedCountries.length > 0) {
+
+        let topCountry = sortedCountries[0][0];
+        let topValue = sortedCountries[0][1];
+
+        let totalTop = sortedCountries.reduce((sum, item) => sum + item[1], 0);
+
+        insight.innerText = `${topCountry} lidera la producción con ${topValue.toLocaleString()} títulos. Al analizar el Top ${topN}, estos países concentran ${totalTop.toLocaleString()} contenidos, evidenciando una fuerte concentración geográfica del catálogo de Netflix.`;
+    }
+}
 
 document.getElementById("topN").addEventListener("change", drawCountryChart);
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
-
-function drawKPIs() {
-
-    // 🎬 Total títulos
-    document.getElementById("totalTitles").innerText = netflixData.length;
-
-    // 🌍 Países únicos
-    let countries = new Set();
-
-    netflixData.forEach(item => {
-        if (item.country) {
-            item.country.split(",").forEach(c => {
-                countries.add(c.trim());
-            });
-        }
-    });
-
-    document.getElementById("totalCountries").innerText = countries.size;
-
-    // 📅 Año más reciente
-    let years = netflixData
-        .map(item => Number(item.release_year))
-        .filter(y => y);
-
-    document.getElementById("latestYear").innerText = Math.max(...years);
-}
+document.getElementById("topN").addEventListener("change", function () {
+    drawCountryChart();
+});
 
 

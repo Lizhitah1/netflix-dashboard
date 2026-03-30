@@ -12,13 +12,13 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
     <!-- Estilos -->
-   <link rel="stylesheet" href="style.css?v=2">
+   <link rel="stylesheet" href="style.css?v=999">
 </head>
 
 <body>
 
     <!-- HEADER -->
-    <header class="header text-white text-center">
+    <div class="header text-white">
         <h1>Netflix Analytics Dashboard 🎬</h1>
         <p>Análisis interactivo del catálogo</p>
     </header>
@@ -27,15 +27,26 @@
         🎬 <span id="totalTitles">0</span>
         <p>Total títulos</p>
     </div>
+    
+    <div class="kpi-container">
+    
+    <div class="kpi">
+        🎬 <span id="totalTitles">0</span>
+        <p>Total títulos</p>
+    </div>
+
     <div class="kpi">
         🌍 <span id="totalCountries">0</span>
         <p>Países</p>
     </div>
+
     <div class="kpi">
         📅 <span id="latestYear">0</span>
         <p>Año más reciente</p>
     </div>
+
 </div>
+
     <!-- CONTENIDO -->
     <div class="container my-5">
 
@@ -80,10 +91,10 @@
                         <option value="10">Top 10</option>
                     </select>
 
-                    <div id="barchart"></div>
+                    <div id="countrychart"></div>
                     <p class="insight">
-    Estados Unidos domina la producción de contenido, seguido por mercados emergentes como India.
-</p>
+                     Texto inicial (se actualizará automáticamente)
+                    </p>
                 </div>
             </div>
 
