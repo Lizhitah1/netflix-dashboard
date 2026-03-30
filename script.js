@@ -169,36 +169,47 @@ function drawGenreChart() {
 
         if (!item.listed_in) return;
 
-        // filtro por tipo
-        if (filter !== "All" && item.type !== filter) return;
-
         let genres = item.listed_in.split(",");
 
         genres.forEach(genre => {
             let g = genre.trim();
-
             if (g === "") return;
 
             if (!genreCount[g]) {
-                genreCount[g] = 0;
+                genreCount[g] = { Movie: 0, "TV Show": 0 };
             }
 
-            genreCount[g]++;
+            if (item.type === "Movie") genreCount[g].Movie++;
+            if (item.type === "TV Show") genreCount[g]["TV Show"]++;
         });
     });
 
-    // ordenar y tomar top 10
     let sortedGenres = Object.entries(genreCount)
-        .sort((a, b) => b[1] - a[1])
+        .sort((a, b) => (b[1].Movie + b[1]["TV Show"]) - (a[1].Movie + a[1]["TV Show"]))
         .slice(0, 10);
 
-    let dataArray = [['Género', 'Cantidad']];
+    let dataArray;
 
-    sortedGenres.forEach(([genre, count]) => {
-        dataArray.push([genre, count]);
-    });
+    if (filter === "Movie") {
+        dataArray = [['Género', 'Películas']];
+        sortedGenres.forEach(([genre, counts]) => {
+            dataArray.push([genre, counts.Movie]);
+        });
+    } 
+    else if (filter === "TV Show") {
+        dataArray = [['Género', 'Series']];
+        sortedGenres.forEach(([genre, counts]) => {
+            dataArray.push([genre, counts["TV Show"]]);
+        });
+    } 
+    else {
+        dataArray = [['Género', 'Películas', 'Series']];
+        sortedGenres.forEach(([genre, counts]) => {
+            dataArray.push([genre, counts.Movie, counts["TV Show"]]);
+        });
+    }
 
-    console.log("🎬 Top géneros:", dataArray);
+    console.log("🎬 Géneros PRO:", dataArray);
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
@@ -207,7 +218,7 @@ function drawGenreChart() {
         legend: { textStyle: { color: 'white' } },
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
-        colors: ['#E50914'],
+        colors: ['#E50914', '#999999'],
         chartArea: { left: 120, width: '70%' }
     };
 
