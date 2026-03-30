@@ -160,13 +160,16 @@ function drawGenreChart() {
 
     let filter = document.getElementById("typeFilter").value;
 
+    console.log("🎯 Filtro:", filter);
+
     let genreCount = {};
 
     netflixData.forEach(item => {
 
         if (!item.listed_in || !item.type) return;
 
-        if (filter !== "Todos" && item.type !== filter) return;
+        // 🔥 Manejo flexible del filtro
+        if (filter !== "Todos" && filter !== "All" && item.type !== filter) return;
 
         item.listed_in.split(",").forEach(g => {
 
@@ -179,8 +182,7 @@ function drawGenreChart() {
 
     let sorted = Object.entries(genreCount)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 7)
-        .reverse();
+        .slice(0, 7);
 
     let dataArray = [['Género', 'Cantidad']];
 
@@ -188,7 +190,13 @@ function drawGenreChart() {
         dataArray.push([genre, Number(count)]);
     });
 
-    console.log("🎬 Géneros:", dataArray);
+    console.log("🎬 Géneros FINAL:", dataArray);
+
+    // 🔥 VALIDACIÓN CLAVE
+    if (dataArray.length <= 1) {
+        console.error("⚠️ No hay datos para el gráfico");
+        return;
+    }
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
@@ -207,6 +215,8 @@ function drawGenreChart() {
 
     chart.draw(data, options);
 }
+
+
 document.getElementById("topN").addEventListener("change", drawCountryChart);
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
 
