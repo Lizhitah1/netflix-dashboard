@@ -83,15 +83,15 @@ function drawPieChart() {
 }
 function drawLineChart() {
 
-    console.log("📈 Dibujando gráfico...");
-
     let years = {};
 
+    // 🔹 Agrupar datos
     netflixData.forEach(item => {
+
         let year = item.release_year;
         let type = item.type;
 
-        if (!year) return; // 🔥 evita datos malos
+        if (!year) return;
 
         if (!years[year]) {
             years[year] = { Movie: 0, "TV Show": 0 };
@@ -101,32 +101,71 @@ function drawLineChart() {
         if (type === "TV Show") years[year]["TV Show"]++;
     });
 
-    let dataArray = [['Año', 'Películas', 'Series']];
+    // 🔥 Data con tooltip PRO
+    let dataArray = [
+        ['Año', 'Películas', 'Series', { role: 'tooltip', p: { html: true } }]
+    ];
 
     Object.keys(years)
-        .filter(year => year)
+        .filter(year => year && (years[year].Movie > 0 || years[year]["TV Show"] > 0))
         .sort((a, b) => a - b)
         .forEach(year => {
+
+            let movies = years[year].Movie;
+            let series = years[year]["TV Show"];
+            let total = movies + series;
+
             dataArray.push([
-                Number(year), // 🔥 clave importante
-                years[year].Movie,
-                years[year]["TV Show"]
+                Number(year),
+                movies,
+                series,
+                `<div style="padding:10px">
+                    <b>${year}</b><br>
+                    🎬 Películas: ${movies.toLocaleString()}<br>
+                    📺 Series: ${series.toLocaleString()}<br>
+                    🔥 Total: ${total.toLocaleString()}
+                </div>`
             ]);
         });
-
-    console.log("📊 Data:", dataArray);
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
         backgroundColor: 'transparent',
-        legendTextStyle: { color: 'white' },
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white' } },
-        colors: ['#E50914', '#aaaaaa']
+
+        legend: {
+            textStyle: { color: 'white' }
+        },
+
+        hAxis: {
+            textStyle: { color: 'white' }
+        },
+
+        vAxis: {
+            textStyle: { color: 'white' },
+            format: 'short' // 🔥 1K, 2K
+        },
+
+        colors: ['#E50914', '#aaaaaa'],
+
+        chartArea: {
+            width: '80%',
+            height: '70%'
+        },
+
+        tooltip: { isHtml: true },
+
+        animation: {
+            startup: true,
+            duration: 1000,
+            easing: 'out'
+        }
     };
 
-    var chart = new google.visualization.LineChart(document.getElementById('linechart'));
+    var chart = new google.visualization.LineChart(
+        document.getElementById('linechart')
+    );
+
     chart.draw(data, options);
 }
 // 6. GRÁFICO 3 (AQUÍ 👇)}}
@@ -256,7 +295,7 @@ function drawCountryChart() {
         legend: 'none',
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
-        colors: ['#E50914'],
+        colors: ['#ff4d4d','#ff1a1a','#cc0000','#990000','#660000']
         chartArea: { left: 150, width: '70%' },
         bars: 'horizontal',
 
