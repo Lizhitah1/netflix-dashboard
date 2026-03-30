@@ -165,6 +165,7 @@ function drawGenreChart() {
 
     let genreCount = {};
 
+    // 🔹 Contar géneros respetando categorías reales
     netflixData.forEach(item => {
 
         if (!item.listed_in) return;
@@ -174,12 +175,7 @@ function drawGenreChart() {
         genres.forEach(genre => {
 
             let g = genre.trim();
-
             if (g === "") return;
-
-            // 🔥 Limpieza PRO de nombres
-            g = g.replace("International ", "")
-                 .replace("TV ", "");
 
             if (!genreCount[g]) {
                 genreCount[g] = { Movie: 0, "TV Show": 0 };
@@ -190,14 +186,34 @@ function drawGenreChart() {
         });
     });
 
-    // 🔥 Ordenar por total y tomar top 10
-    let sortedGenres = Object.entries(genreCount)
-        .sort((a, b) => (b[1].Movie + b[1]["TV Show"]) - (a[1].Movie + a[1]["TV Show"]))
-        .slice(0, 10)
-        .reverse(); // 👈 mejora visual en horizontal
+    let sortedGenres;
+
+    // 🔥 Lógica correcta según filtro
+    if (filter === "Movie") {
+        sortedGenres = Object.entries(genreCount)
+            .sort((a, b) => b[1].Movie - a[1].Movie)
+            .slice(0, 10);
+    } 
+    else if (filter === "TV Show") {
+        sortedGenres = Object.entries(genreCount)
+            .sort((a, b) => b[1]["TV Show"] - a[1]["TV Show"])
+            .slice(0, 10);
+    } 
+    else {
+        // 🔥 "Todos" = volumen total
+        sortedGenres = Object.entries(genreCount)
+            .sort((a, b) => 
+                (b[1].Movie + b[1]["TV Show"]) - (a[1].Movie + a[1]["TV Show"])
+            )
+            .slice(0, 10);
+    }
+
+    //  Invertir para mejor lectura en horizontal
+    sortedGenres.reverse();
 
     let dataArray;
 
+    // 🔹 Construcción dinámica del dataset
     if (filter === "Movie") {
         dataArray = [['Género', 'Películas']];
         sortedGenres.forEach(([genre, counts]) => {
@@ -225,7 +241,7 @@ function drawGenreChart() {
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
         colors: ['#E50914', '#999999'],
-        chartArea: { left: 200, width: '65%' }, // 👈 espacio para etiquetas
+        chartArea: { left: 220, width: '60%' }, 
         bars: 'horizontal'
     };
 
