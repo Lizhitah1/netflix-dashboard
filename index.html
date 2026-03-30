@@ -2,6 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+
+    <!-- 🔥 RESPONSIVE (te faltaba esto) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Netflix Analytics Dashboard</title>
 
     <!-- Bootstrap -->
@@ -9,16 +13,18 @@
 
     <!-- Google Charts -->
     <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <!-- PapaParse -->
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
     <!-- Estilos -->
-    <link rel="stylesheet" href="style.css?v=1000">
+    <link rel="stylesheet" href="style.css?v=2000">
 </head>
 
 <body>
 
     <!-- HEADER -->
-    <div class="header text-white">
+    <div class="header text-white text-center">
         <h1>Netflix Analytics Dashboard 🎬</h1>
         <p>Análisis interactivo del catálogo</p>
     </div>
@@ -47,24 +53,24 @@
         <!-- FILA 1 -->
         <div class="row g-4">
 
-            <!-- GRÁFICO 1 -->
+            <!-- PIE -->
             <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Distribución del contenido</h5>
-                    <div id="piechart"></div>
+                    <div id="piechart" style="height:300px;"></div>
                     <p class="insight">
                         Netflix presenta una mayor proporción de películas frente a series.
                     </p>
                 </div>
             </div>
 
-            <!-- GRÁFICO 2 -->
+            <!-- LINE -->
             <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Evolución del catálogo</h5>
-                    <div id="linechart"></div>
+                    <div id="linechart" style="height:300px;"></div>
                     <p class="insight">
-                        Se observa un crecimiento sostenido del catálogo, con una aceleración significativa a partir de 2018.
+                        Se observa un crecimiento sostenido del catálogo desde 2018.
                     </p>
                 </div>
             </div>
@@ -74,7 +80,7 @@
         <!-- FILA 2 -->
         <div class="row g-4 mt-1">
 
-            <!-- GRÁFICO 3 -->
+            <!-- COUNTRIES -->
             <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Top países productores</h5>
@@ -85,14 +91,15 @@
                         <option value="10">Top 10</option>
                     </select>
 
-                    <div id="countrychart"></div>
+                    <div id="countrychart" style="height:300px;"></div>
+
                     <p class="insight">
                         Texto inicial (se actualizará automáticamente)
                     </p>
                 </div>
             </div>
 
-            <!-- GRÁFICO 4 -->
+            <!-- GENRES -->
             <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Géneros más frecuentes</h5>
@@ -103,10 +110,10 @@
                         <option value="TV Show">Series</option>
                     </select>
 
-                    <div id="genrechart"></div>
+                    <div id="genrechart" style="height:300px;"></div>
 
                     <p class="insight" id="genreInsight">
-                        El género drama concentra la mayor parte del catálogo, seguido por comedia y acción.
+                        El género drama concentra la mayor parte del catálogo.
                     </p>
                 </div>
             </div>
@@ -116,7 +123,7 @@
     </div>
 
     <!-- JS -->
-    <script src="script.js?v=210"></script>
+    <script src="script.js?v=300"></script>
 
 </body>
 </html>
