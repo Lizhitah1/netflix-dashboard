@@ -24,6 +24,7 @@ google.charts.load('current', { packages: ['corechart'] });
 google.charts.setOnLoadCallback(loadCSV);
 
 function init() {
+    drawKPIs();
     drawPieChart();
     drawLineChart();
     drawCountryChart();
@@ -223,23 +224,49 @@ function drawGenreChart() {
     // 🎯 INSIGHT DINÁMICO
     let insight = document.getElementById("genreInsight");
 
-    if (sorted.length > 0) {
-        let topGenre = sorted[0][0];
+if (sorted.length > 0) {
+    let topGenre = sorted[0][0];
 
-        if (filter === "Movie") {
-            insight.innerText = `Las películas están dominadas por el género ${topGenre}, evidenciando una fuerte preferencia en este tipo de contenido.`;
-        } 
-        else if (filter === "TV Show") {
-            insight.innerText = `Las series destacan principalmente en ${topGenre}, mostrando tendencias específicas en contenido episódico.`;
-        } 
-        else {
-            insight.innerText = `A nivel general, el género ${topGenre} lidera el catálogo de Netflix, consolidándose como el más representativo.`;
-        }
+    if (filter === "Movie") {
+        insight.innerHTML = `Las películas están dominadas por el género <span class="highlight">${topGenre}</span>.`;
+    } 
+    else if (filter === "TV Show") {
+        insight.innerHTML = `Las series destacan principalmente en <span class="highlight">${topGenre}</span>.`;
+    } 
+    else {
+        insight.innerHTML = `A nivel general, el género <span class="highlight">${topGenre}</span> lidera el catálogo de Netflix.`;
     }
+}
 }
 
 
 document.getElementById("topN").addEventListener("change", drawCountryChart);
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
+
+function drawKPIs() {
+
+    // 🎬 Total títulos
+    document.getElementById("totalTitles").innerText = netflixData.length;
+
+    // 🌍 Países únicos
+    let countries = new Set();
+
+    netflixData.forEach(item => {
+        if (item.country) {
+            item.country.split(",").forEach(c => {
+                countries.add(c.trim());
+            });
+        }
+    });
+
+    document.getElementById("totalCountries").innerText = countries.size;
+
+    // 📅 Año más reciente
+    let years = netflixData
+        .map(item => Number(item.release_year))
+        .filter(y => y);
+
+    document.getElementById("latestYear").innerText = Math.max(...years);
+}
 
 
