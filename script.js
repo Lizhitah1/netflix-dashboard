@@ -110,34 +110,49 @@ function drawLineChart() {
 // 6. GRÁFICO 3 (AQUÍ 👇)
 function drawCountryChart() {
 
-    var topN = document.getElementById("topN").value;
+    let topN = parseInt(document.getElementById("topN").value);
 
-    var allData = [
-        ['País', 'Cantidad'],
-        ['Estados Unidos', 3000],
-        ['India', 1000],
-        ['Reino Unido', 800],
-        ['Canadá', 600],
-        ['Japón', 500],
-        ['España', 400],
-        ['Corea del Sur', 350],
-        ['Francia', 300],
-        ['México', 250],
-        ['Alemania', 200]
-    ];
+    let countryCount = {};
 
-    var dataFiltered = [allData[0]].concat(allData.slice(1, parseInt(topN) + 1));
+    netflixData.forEach(item => {
+        if (!item.country) return;
 
-    var data = google.visualization.arrayToDataTable(dataFiltered);
+        let countries = item.country.split(",");
+
+        countries.forEach(country => {
+            let c = country.trim();
+
+            if (!countryCount[c]) {
+                countryCount[c] = 0;
+            }
+
+            countryCount[c]++;
+        });
+    });
+
+    // Convertir a array y ordenar
+    let sortedCountries = Object.entries(countryCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, topN);
+
+    let dataArray = [['País', 'Cantidad']];
+
+    sortedCountries.forEach(([country, count]) => {
+        dataArray.push([country, count]);
+    });
+
+    console.log("🌍 Top países:", dataArray);
+
+    var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
-    backgroundColor: 'transparent',
-    legend: { textStyle: { color: 'white' } },
-    hAxis: { textStyle: { color: 'white' } },
-    vAxis: { textStyle: { color: 'white' } },
-    colors: ['#E50914'],
-    chartArea: { left: 120, width: '70%' }
-};
+        backgroundColor: 'transparent',
+        legend: { textStyle: { color: 'white' } },
+        hAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white' } },
+        colors: ['#E50914'],
+        chartArea: { left: 120, width: '70%' }
+    };
 
     var chart = new google.visualization.BarChart(document.getElementById('barchart'));
     chart.draw(data, options);
