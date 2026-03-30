@@ -108,38 +108,37 @@ function drawLineChart() {
     chart.draw(data, options);
 }
 // 6. GRÁFICO 3 (AQUÍ 👇)}
-function drawGenreChart() {
+function drawCountryChart() {
 
-    let filter = document.getElementById("typeFilter").value;
+    let topN = parseInt(document.getElementById("topN").value);
 
-    let genreCount = {};
+    let countryCount = {};
 
     netflixData.forEach(item => {
 
-        if (!item.listed_in || !item.type) return;
+        if (!item.country) return;
 
-        if (filter !== "Todos" && item.type !== filter) return;
+        item.country.split(",").forEach(c => {
 
-        item.listed_in.split(",").forEach(genre => {
+            let country = c.trim();
+            if (!country) return;
 
-            let g = genre.trim();
-            if (!g) return;
-
-            genreCount[g] = (genreCount[g] || 0) + 1;
+            countryCount[country] = (countryCount[country] || 0) + 1;
         });
     });
 
-    let sortedGenres = Object.entries(genreCount)
+    let sorted = Object.entries(countryCount)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 7);
+        .slice(0, topN)
+        .reverse();
 
-    let dataArray = [['Género', 'Cantidad']];
+    let dataArray = [['País', 'Cantidad']];
 
-    sortedGenres.forEach(([genre, count]) => {
-        dataArray.push([genre, Number(count)]); // 🔥 aseguramos número
+    sorted.forEach(([country, count]) => {
+        dataArray.push([country, count]);
     });
 
-    console.log("🎬 Géneros FINAL:", dataArray);
+    console.log("🌍 Países:", dataArray);
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
@@ -153,8 +152,64 @@ function drawGenreChart() {
     };
 
     var chart = new google.visualization.BarChart(
+        document.getElementById('barchart')
+    );
+
+    chart.draw(data, options);
+}
+// 7. GRÁFICO 4 (AQUÍ 👇
+function drawGenreChart() {
+
+    let filter = document.getElementById("typeFilter").value;
+
+    let genreCount = {};
+
+    netflixData.forEach(item => {
+
+        if (!item.listed_in || !item.type) return;
+
+        if (filter !== "Todos" && item.type !== filter) return;
+
+        item.listed_in.split(",").forEach(g => {
+
+            let genre = g.trim();
+            if (!genre) return;
+
+            genreCount[genre] = (genreCount[genre] || 0) + 1;
+        });
+    });
+
+    let sorted = Object.entries(genreCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 7)
+        .reverse();
+
+    let dataArray = [['Género', 'Cantidad']];
+
+    sorted.forEach(([genre, count]) => {
+        dataArray.push([genre, Number(count)]);
+    });
+
+    console.log("🎬 Géneros:", dataArray);
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+        backgroundColor: 'transparent',
+        legend: 'none',
+        hAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white', fontSize: 11 } },
+        colors: ['#E50914'],
+        chartArea: { left: 180, width: '65%' }
+    };
+
+    var chart = new google.visualization.BarChart(
         document.getElementById('genrechart')
     );
 
     chart.draw(data, options);
 }
+document.getElementById("topN").addEventListener("change", drawCountryChart);
+document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
+
+
