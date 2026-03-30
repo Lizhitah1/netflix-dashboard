@@ -138,8 +138,6 @@ function drawCountryChart() {
         dataArray.push([country, count]);
     });
 
-    console.log("🌍 Países:", dataArray);
-
     var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
