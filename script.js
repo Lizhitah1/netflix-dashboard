@@ -25,7 +25,7 @@ google.charts.setOnLoadCallback(loadCSV);
 
 function init() {
     drawPieChart();
-    //drawLineChart();
+    drawLineChart();
     drawCountryChart();
     drawGenreChart();
 }
@@ -57,6 +57,46 @@ function drawPieChart() {
     };
 
     var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    chart.draw(data, options);
+}
+function drawLineChart() {
+
+    let years = {};
+
+    netflixData.forEach(item => {
+        let year = item.release_year;
+        let type = item.type;
+
+        if (!years[year]) {
+            years[year] = { Movie: 0, "TV Show": 0 };
+        }
+
+        if (type === "Movie") years[year].Movie++;
+        if (type === "TV Show") years[year]["TV Show"]++;
+    });
+
+    let dataArray = [['Año', 'Películas', 'Series']];
+
+    Object.keys(years).sort().forEach(year => {
+        dataArray.push([
+            year,
+            years[year].Movie,
+            years[year]["TV Show"]
+        ]);
+    });
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+        backgroundColor: 'transparent',
+        legendTextStyle: { color: 'white' },
+        titleTextStyle: { color: 'white' },
+        hAxis: { textStyle: { color: 'white' } },
+        vAxis: { textStyle: { color: 'white' } },
+        colors: ['#E50914', '#aaaaaa']
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('linechart'));
     chart.draw(data, options);
 }
 // 6. GRÁFICO 3 (AQUÍ 👇)
