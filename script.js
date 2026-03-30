@@ -129,54 +129,7 @@ function drawLineChart() {
     var chart = new google.visualization.LineChart(document.getElementById('linechart'));
     chart.draw(data, options);
 }
-// 6. GRÁFICO 3 (AQUÍ 👇)}
-function drawCountryChart() {
-
-    let topN = parseInt(document.getElementById("topN").value);
-
-    let countryCount = {};
-
-    netflixData.forEach(item => {
-
-        if (!item.country) return;
-
-        item.country.split(",").forEach(c => {
-
-            let country = c.trim();
-            if (!country) return;
-
-            countryCount[country] = (countryCount[country] || 0) + 1;
-        });
-    });
-
-    let sorted = Object.entries(countryCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, topN)
-        .reverse();
-
-    let dataArray = [['País', 'Cantidad']];
-
-    sorted.forEach(([country, count]) => {
-        dataArray.push([country, count]);
-    });
-
-    var data = google.visualization.arrayToDataTable(dataArray);
-
-    var options = {
-        backgroundColor: 'transparent',
-        legend: 'none',
-        hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white', fontSize: 11 } },
-        colors: ['#E50914'],
-        chartArea: { left: 150, width: '70%' }
-    };
-
-    var chart = new google.visualization.BarChart(
-        document.getElementById('barchart')
-    );
-
-    chart.draw(data, options);
-}
+// 6. GRÁFICO 3 (AQUÍ 👇)}}
 // 7. GRÁFICO 4 (AQUÍ 👇
 function drawGenreChart() {
 
@@ -333,8 +286,31 @@ function drawCountryChart() {
         insight.innerText = `${topCountry} lidera la producción con ${topValue.toLocaleString()} títulos. Al analizar el Top ${topN}, estos países concentran ${totalTop.toLocaleString()} contenidos, evidenciando una fuerte concentración geográfica del catálogo de Netflix.`;
     }
 }
+function drawKPIs() {
 
-document.getElementById("topN").addEventListener("change", drawCountryChart);
+    let total = netflixData.length;
+
+    let countries = new Set();
+    let years = [];
+
+    netflixData.forEach(item => {
+        if (item.country) {
+            item.country.split(",").forEach(c => countries.add(c.trim()));
+        }
+
+        if (item.release_year) {
+            years.push(parseInt(item.release_year));
+        }
+    });
+
+    let maxYear = Math.max(...years);
+
+    animateValue("totalTitles", 0, total, 1000);
+    animateValue("totalCountries", 0, countries.size, 1000);
+    animateValue("latestYear", 0, maxYear, 1000);
+}
+
+
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
 document.getElementById("topN").addEventListener("change", function () {
     drawCountryChart();
