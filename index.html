@@ -18,18 +18,12 @@
 <body>
 
     <!-- HEADER -->
-    <div class="header text-white">
-        <h1>Netflix Analytics Dashboard 🎬</h1>
-        <p>Análisis interactivo del catálogo</p>
-    </header>
+   <div class="header text-white">
+    <h1>Netflix Analytics Dashboard 🎬</h1>
+    <p>Análisis interactivo del catálogo</p>
+</div>
 <div class="kpi-container">
-    <div class="kpi">
-        🎬 <span id="totalTitles">0</span>
-        <p>Total títulos</p>
-    </div>
-    
-    <div class="kpi-container">
-    
+
     <div class="kpi">
         🎬 <span id="totalTitles">0</span>
         <p>Total títulos</p>
@@ -54,7 +48,7 @@
         <div class="row g-4">
 
             <!-- GRÁFICO 1 -->
-            <div class="col-md-6">
+            <div class="col-12 col-md-6"></div>
                 <div class="card-custom">
                     <h5>Distribución del contenido</h5>
                     <div id="piechart"></div>
@@ -62,6 +56,7 @@
                         Netflix presenta una mayor proporción de películas frente a series.
                     </p>
                 </div>
+            </div>
             </div>
 
             <!-- GRÁFICO 2 (espacio reservado) -->
@@ -104,7 +99,7 @@
     <div class="card-custom">
         <h5>Géneros más frecuentes</h5>
 
-        <select id="typeFilter" onchange="drawGenreChart()">
+        <select id="typeFilter" class="form-select mb-2" onchange="drawGenreChart()">
             <option value="Todos">Todos</option>
             <option value="Movie">Películas</option>
             <option value="TV Show">Series</option>
