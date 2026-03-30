@@ -61,11 +61,15 @@ function drawPieChart() {
 }
 function drawLineChart() {
 
+    console.log("📈 Dibujando gráfico...");
+
     let years = {};
 
     netflixData.forEach(item => {
         let year = item.release_year;
         let type = item.type;
+
+        if (!year) return; // 🔥 evita datos malos
 
         if (!years[year]) {
             years[year] = { Movie: 0, "TV Show": 0 };
@@ -77,20 +81,24 @@ function drawLineChart() {
 
     let dataArray = [['Año', 'Películas', 'Series']];
 
-    Object.keys(years).sort().forEach(year => {
-        dataArray.push([
-            year,
-            years[year].Movie,
-            years[year]["TV Show"]
-        ]);
-    });
+    Object.keys(years)
+        .filter(year => year)
+        .sort((a, b) => a - b)
+        .forEach(year => {
+            dataArray.push([
+                Number(year), // 🔥 clave importante
+                years[year].Movie,
+                years[year]["TV Show"]
+            ]);
+        });
+
+    console.log("📊 Data:", dataArray);
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
         backgroundColor: 'transparent',
         legendTextStyle: { color: 'white' },
-        titleTextStyle: { color: 'white' },
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
         colors: ['#E50914', '#aaaaaa']
