@@ -114,7 +114,7 @@ function drawGenreChart() {
 
     let genreCount = {};
 
-    // 🔹 Contar géneros respetando dataset original
+    // 🔹 Contar géneros
     netflixData.forEach(item => {
 
         if (!item.listed_in) return;
@@ -137,7 +137,7 @@ function drawGenreChart() {
 
     let sortedGenres;
 
-    // 🔥 Lógica correcta por filtro
+    // 🔥 Lógica según filtro (UNA sola métrica)
     if (filter === "Movie") {
         sortedGenres = Object.entries(genreCount)
             .sort((a, b) => b[1].Movie - a[1].Movie)
@@ -156,53 +156,38 @@ function drawGenreChart() {
             .slice(0, 7);
     }
 
-    // 🔥 Mejor orden visual
+    // 🔹 Mejor orden visual
     sortedGenres.reverse();
 
-    let dataArray;
+    // 🔹 Dataset SIEMPRE de una sola columna
+    let dataArray = [['Género', 'Cantidad']];
 
-    // 🔹 Función para limpiar nombres (SOLO VISUAL)
-    function cleanLabel(name) {
-        return name
-            .replace("International ", "Int. ")
-            .replace("TV Shows", "TV")
-            .replace("TV ", "TV ")
-            .replace("Movies", "Mov.");
-    }
+    sortedGenres.forEach(([genre, counts]) => {
 
-    // 🔹 Construcción del dataset
-    if (filter === "Movie") {
-        dataArray = [['Género', 'Películas']];
-        sortedGenres.forEach(([genre, counts]) => {
-            dataArray.push([cleanLabel(genre), counts.Movie]);
-        });
-    } 
-    else if (filter === "TV Show") {
-        dataArray = [['Género', 'Series']];
-        sortedGenres.forEach(([genre, counts]) => {
-            dataArray.push([cleanLabel(genre), counts["TV Show"]]);
-        });
-    } 
-    else {
-        dataArray = [['Género', 'Películas', 'Series']];
-        sortedGenres.forEach(([genre, counts]) => {
-            dataArray.push([
-                cleanLabel(genre),
-                counts.Movie,
-                counts["TV Show"]
-            ]);
-        });
-    }
+        let value;
+
+        if (filter === "Movie") {
+            value = counts.Movie;
+        } 
+        else if (filter === "TV Show") {
+            value = counts["TV Show"];
+        } 
+        else {
+            value = counts.Movie + counts["TV Show"];
+        }
+
+        dataArray.push([genre, value]);
+    });
 
     var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
         backgroundColor: 'transparent',
-        legend: { textStyle: { color: 'white' } },
+        legend: 'none', // 👈 clave (no hay comparación)
         hAxis: { textStyle: { color: 'white' } },
-        vAxis: { textStyle: { color: 'white', fontSize: 10 } },
-        colors: ['#E50914', '#999999'],
-        chartArea: { left: 250, width: '55%' }, // 👈 más espacio etiquetas
+        vAxis: { textStyle: { color: 'white', fontSize: 11 } },
+        colors: ['#E50914'],
+        chartArea: { left: 250, width: '60%' },
         bars: 'horizontal'
     };
 
