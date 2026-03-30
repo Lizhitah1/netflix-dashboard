@@ -12,34 +12,34 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
     <!-- Estilos -->
-   <link rel="stylesheet" href="style.css?v=999">
+    <link rel="stylesheet" href="style.css?v=1000">
 </head>
 
 <body>
 
     <!-- HEADER -->
-   <div class="header text-white">
-    <h1>Netflix Analytics Dashboard 🎬</h1>
-    <p>Análisis interactivo del catálogo</p>
-</div>
-<div class="kpi-container">
-
-    <div class="kpi">
-        🎬 <span id="totalTitles">0</span>
-        <p>Total títulos</p>
+    <div class="header text-white">
+        <h1>Netflix Analytics Dashboard 🎬</h1>
+        <p>Análisis interactivo del catálogo</p>
     </div>
 
-    <div class="kpi">
-        🌍 <span id="totalCountries">0</span>
-        <p>Países</p>
-    </div>
+    <!-- KPI -->
+    <div class="kpi-container">
+        <div class="kpi">
+            🎬 <span id="totalTitles">0</span>
+            <p>Total títulos</p>
+        </div>
 
-    <div class="kpi">
-        📅 <span id="latestYear">0</span>
-        <p>Año más reciente</p>
-    </div>
+        <div class="kpi">
+            🌍 <span id="totalCountries">0</span>
+            <p>Países</p>
+        </div>
 
-</div>
+        <div class="kpi">
+            📅 <span id="latestYear">0</span>
+            <p>Año más reciente</p>
+        </div>
+    </div>
 
     <!-- CONTENIDO -->
     <div class="container my-5">
@@ -48,7 +48,7 @@
         <div class="row g-4">
 
             <!-- GRÁFICO 1 -->
-            <div class="col-12 col-md-6"></div>
+            <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Distribución del contenido</h5>
                     <div id="piechart"></div>
@@ -57,16 +57,15 @@
                     </p>
                 </div>
             </div>
-            </div>
 
-            <!-- GRÁFICO 2 (espacio reservado) -->
-            <div class="col-md-6">
+            <!-- GRÁFICO 2 -->
+            <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Evolución del catálogo</h5>
                     <div id="linechart"></div>
                     <p class="insight">
-    Se observa un crecimiento sostenido del catálogo, con una aceleración significativa a partir de 2018.
-</p>
+                        Se observa un crecimiento sostenido del catálogo, con una aceleración significativa a partir de 2018.
+                    </p>
                 </div>
             </div>
 
@@ -76,11 +75,11 @@
         <div class="row g-4 mt-1">
 
             <!-- GRÁFICO 3 -->
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <div class="card-custom">
                     <h5>Top países productores</h5>
 
-                    <select id="topN" class="form-select mb-2" onchange="drawCountryChart()">
+                    <select id="topN" class="form-select mb-2">
                         <option value="3">Top 3</option>
                         <option value="5">Top 5</option>
                         <option value="10">Top 10</option>
@@ -88,32 +87,36 @@
 
                     <div id="countrychart"></div>
                     <p class="insight">
-                     Texto inicial (se actualizará automáticamente)
+                        Texto inicial (se actualizará automáticamente)
                     </p>
                 </div>
             </div>
 
             <!-- GRÁFICO 4 -->
-<!-- GRÁFICO 4 -->
-<div class="col-md-6">
-    <div class="card-custom">
-        <h5>Géneros más frecuentes</h5>
+            <div class="col-12 col-md-6">
+                <div class="card-custom">
+                    <h5>Géneros más frecuentes</h5>
 
-        <select id="typeFilter" class="form-select mb-2" onchange="drawGenreChart()">
-            <option value="Todos">Todos</option>
-            <option value="Movie">Películas</option>
-            <option value="TV Show">Series</option>
-        </select>
+                    <select id="typeFilter" class="form-select mb-2">
+                        <option value="Todos">Todos</option>
+                        <option value="Movie">Películas</option>
+                        <option value="TV Show">Series</option>
+                    </select>
 
-        <div id="genrechart"></div>
+                    <div id="genrechart"></div>
 
-        <p class="insight" id="genreInsight">
-            El género drama concentra la mayor parte del catálogo, seguido por comedia y acción, evidenciando una preferencia por contenido narrativo.
-        </p>
+                    <p class="insight" id="genreInsight">
+                        El género drama concentra la mayor parte del catálogo, seguido por comedia y acción.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
     </div>
-</div>
+
     <!-- JS -->
-    <script src="script.js?v=100"></script>
+    <script src="script.js?v=200"></script>
 
 </body>
 </html>
