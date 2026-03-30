@@ -172,8 +172,14 @@ function drawGenreChart() {
         let genres = item.listed_in.split(",");
 
         genres.forEach(genre => {
+
             let g = genre.trim();
+
             if (g === "") return;
+
+            // 🔥 Limpieza PRO de nombres
+            g = g.replace("International ", "")
+                 .replace("TV ", "");
 
             if (!genreCount[g]) {
                 genreCount[g] = { Movie: 0, "TV Show": 0 };
@@ -184,9 +190,11 @@ function drawGenreChart() {
         });
     });
 
+    // 🔥 Ordenar por total y tomar top 10
     let sortedGenres = Object.entries(genreCount)
         .sort((a, b) => (b[1].Movie + b[1]["TV Show"]) - (a[1].Movie + a[1]["TV Show"]))
-        .slice(0, 10);
+        .slice(0, 10)
+        .reverse(); // 👈 mejora visual en horizontal
 
     let dataArray;
 
@@ -209,8 +217,6 @@ function drawGenreChart() {
         });
     }
 
-    console.log("🎬 Géneros PRO:", dataArray);
-
     var data = google.visualization.arrayToDataTable(dataArray);
 
     var options = {
@@ -219,9 +225,10 @@ function drawGenreChart() {
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white' } },
         colors: ['#E50914', '#999999'],
-        chartArea: { left: 120, width: '70%' }
+        chartArea: { left: 200, width: '65%' }, // 👈 espacio para etiquetas
+        bars: 'horizontal'
     };
 
-    var chart = new google.visualization.ColumnChart(document.getElementById('genrechart'));
+    var chart = new google.visualization.BarChart(document.getElementById('genrechart'));
     chart.draw(data, options);
 }
