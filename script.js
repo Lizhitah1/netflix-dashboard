@@ -118,32 +118,25 @@ function drawGenreChart() {
 
         if (!item.listed_in || !item.type) return;
 
-        // 🔥 SOLO cuenta el tipo seleccionado
         if (filter !== "Todos" && item.type !== filter) return;
 
-        let genres = item.listed_in.split(",");
-
-        genres.forEach(genre => {
+        item.listed_in.split(",").forEach(genre => {
 
             let g = genre.trim();
             if (!g) return;
 
-            if (!genreCount[g]) genreCount[g] = 0;
-
-            genreCount[g]++;
+            genreCount[g] = (genreCount[g] || 0) + 1;
         });
     });
 
-    // 🔹 Ordenar
     let sortedGenres = Object.entries(genreCount)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 7)
-        .reverse(); // mejor visual
+        .slice(0, 7);
 
     let dataArray = [['Género', 'Cantidad']];
 
     sortedGenres.forEach(([genre, count]) => {
-        dataArray.push([genre, count]);
+        dataArray.push([genre, Number(count)]); // 🔥 aseguramos número
     });
 
     console.log("🎬 Géneros FINAL:", dataArray);
@@ -156,8 +149,7 @@ function drawGenreChart() {
         hAxis: { textStyle: { color: 'white' } },
         vAxis: { textStyle: { color: 'white', fontSize: 11 } },
         colors: ['#E50914'],
-        chartArea: { left: 250, width: '60%' },
-        bars: 'horizontal'
+        chartArea: { left: 150, width: '70%' }
     };
 
     var chart = new google.visualization.BarChart(
