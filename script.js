@@ -89,7 +89,6 @@ function drawPieChart() {
         backgroundColor: 'transparent',
         chartArea: { width: '80%', height: '80%' },
 
-        // 🔥 FIX LEYENDA
         legend: {
             position: 'right',
             textStyle: { color: '#fff' }
@@ -152,7 +151,7 @@ function drawLineChart() {
         hAxis: { textStyle: { color: '#fff' } },
         vAxis: { textStyle: { color: '#fff' }, format: 'short' },
 
-        tooltip: { isHtml: true }, // 🔥 FIX TOOLTIP
+        tooltip: { isHtml: true },
         legend: { textStyle: { color: '#fff' } }
     };
 
@@ -178,15 +177,20 @@ function drawCountryChart() {
         });
     });
 
-    // 🔥 ORDEN CORRECTO
     let sorted = Object.entries(count)
         .sort((a, b) => b[1] - a[1])
         .slice(0, topN);
 
-    let dataArray = [['País', 'Cantidad']];
+    // 🔥 DEGRADADO REAL
+    let dataArray = [['País', 'Cantidad', { role: 'style' }]];
 
-    sorted.forEach(([c, v]) => {
-        dataArray.push([c, v]);
+    let colors = [
+        '#ff4d4d','#ff3333','#ff1a1a','#e50914',
+        '#cc0000','#b20710','#990000','#800000','#660000','#4d0000'
+    ];
+
+    sorted.forEach(([c, v], i) => {
+        dataArray.push([c, v, colors[i] || '#E50914']);
     });
 
     const data = google.visualization.arrayToDataTable(dataArray);
@@ -198,17 +202,13 @@ function drawCountryChart() {
         chartArea: { left: 220, width: '60%' },
 
         hAxis: { textStyle: { color: '#ccc' } },
-        vAxis: { textStyle: { color: '#fff', fontSize: 12 } },
-
-        // 🔥 EFECTO DEGRADADO
-        colors: ['#ff4d4d','#ff1a1a','#e50914','#b20710','#7a0408']
+        vAxis: { textStyle: { color: '#fff', fontSize: 12 } }
     };
 
     new google.visualization.BarChart(
         document.getElementById('countrychart')
     ).draw(data, options);
 
-    // INSIGHT
     let insight = document.querySelector("#countrychart + .insight");
 
     if (sorted.length > 0) {
@@ -253,16 +253,23 @@ function drawGenreChart() {
         backgroundColor: 'transparent',
         legend: 'none',
 
-        chartArea: { left: 240, width: '55%' },
+        chartArea: { width: '70%', height: '65%' },
 
-        // 🔥 COLOR DIFERENTE (ya no se ve igual)
-        colors: ['#00c853'],
+        colors: ['#00e676'], // 🔥 distinto al otro
 
-        hAxis: { textStyle: { color: '#ccc' } },
-        vAxis: { textStyle: { color: '#fff', fontSize: 12 } }
+        hAxis: {
+            textStyle: { color: '#fff', fontSize: 10 },
+            slantedText: true,
+            slantedTextAngle: 30
+        },
+
+        vAxis: {
+            textStyle: { color: '#ccc' }
+        }
     };
 
-    new google.visualization.BarChart(
+    // 🔥 CAMBIO DE TIPO
+    new google.visualization.ColumnChart(
         document.getElementById('genrechart')
     ).draw(data, options);
 
