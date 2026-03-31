@@ -218,68 +218,108 @@ function drawCountryChart() {
 }
 
 // ================= GENRES =================
-function drawGenreChart() {
+function drawCountryChart() {
 
-    let filter = document.getElementById("typeFilter").value;
-    let count = {};
+    let topN = parseInt(document.getElementById("topN").value);
 
+    let countryCount = {};
+
+    // Contar países
     netflixData.forEach(item => {
 
-        if (!item.listed_in) return;
+        if (!item.country) return;
 
-        if (filter === "Movie" && item.type !== "Movie") return;
-        if (filter === "TV Show" && item.type !== "TV Show") return;
+        item.country.split(",").forEach(country => {
 
-        item.listed_in.split(",").forEach(g => {
-            let genre = g.trim();
-            if (!genre) return;
-            count[genre] = (count[genre] || 0) + 1;
+            let c = country.trim();
+            if (!c) return;
+
+            if (!countryCount[c]) countryCount[c] = 0;
+
+            countryCount[c]++;
         });
     });
 
-    let sorted = Object.entries(count)
+    // Ordenar (SIN reverse 🔥)
+    let sortedCountries = Object.entries(countryCount)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 7);
+        .slice(0, topN);
 
-    let dataArray = [['Género', 'Cantidad']];
+    // 🎯 DEGRADADO NETFLIX (clave)
+    const colorsGradient = [
+        '#ff4d4d',
+        '#ff1a1a',
+        '#E50914',
+        '#b20710',
+        '#800000',
+        '#660000',
+        '#4d0000',
+        '#330000',
+        '#1a0000',
+        '#0d0000'
+    ];
 
-    sorted.forEach(([g, v]) => {
-        dataArray.push([g, v]);
+    let dataArray = [['País', 'Cantidad', { role: 'style' }]];
+
+    sortedCountries.forEach(([country, count], index) => {
+        let color = colorsGradient[index] || '#E50914';
+        dataArray.push([country, count, color]);
     });
 
-    const data = google.visualization.arrayToDataTable(dataArray);
+    var data = google.visualization.arrayToDataTable(dataArray);
 
-    const options = {
+    var options = {
         backgroundColor: 'transparent',
         legend: 'none',
 
-        chartArea: { width: '70%', height: '65%' },
-
-        colors: ['#00e676'], // 🔥 distinto al otro
-
         hAxis: {
-            textStyle: { color: '#fff', fontSize: 10 },
-            slantedText: true,
-            slantedTextAngle: 30
+            textStyle: { color: 'white' },
+            gridlines: { color: '#333' }
         },
 
         vAxis: {
-            textStyle: { color: '#ccc' }
+            textStyle: { color: 'white' },
+            gridlines: { color: 'transparent' }
+        },
+
+        chartArea: {
+            left: 130,
+            width: '65%',
+            height: '70%'
+        },
+
+        bars: 'horizontal',
+
+        tooltip: {
+            textStyle: { color: 'white' }
+        },
+
+        animation: {
+            startup: true,
+            duration: 800,
+            easing: 'out'
         }
     };
 
-    // 🔥 CAMBIO DE TIPO
-    new google.visualization.ColumnChart(
-        document.getElementById('genrechart')
-    ).draw(data, options);
+    var chart = new google.visualization.BarChart(
+        document.getElementById('countrychart')
+    );
 
-    let insight = document.getElementById("genreInsight");
+    chart.draw(data, options);
 
-    if (sorted.length > 0) {
-        insight.innerHTML = `El género <span class="highlight">${sorted[0][0]}</span> lidera el catálogo.`;
+    // 🔥 INSIGHT DINÁMICO
+    let insight = document.querySelector("#countrychart + .insight");
+
+    if (sortedCountries.length > 0) {
+
+        let topCountry = sortedCountries[0][0];
+        let topValue = sortedCountries[0][1];
+
+        let totalTop = sortedCountries.reduce((sum, item) => sum + item[1], 0);
+
+        insight.innerText = `${topCountry} lidera la producción con ${topValue.toLocaleString()} títulos. El Top ${topN} concentra ${totalTop.toLocaleString()} contenidos, evidenciando una fuerte concentración geográfica del catálogo.`;
     }
 }
-
 // ================= EVENTS =================
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
 document.getElementById("topN").addEventListener("change", drawCountryChart);
