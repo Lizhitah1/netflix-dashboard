@@ -88,12 +88,7 @@ function drawPieChart() {
         colors: ['#E50914', '#9e9e9e'],
         backgroundColor: 'transparent',
         chartArea: { width: '80%', height: '80%' },
-
-        legend: {
-            position: 'right',
-            textStyle: { color: '#fff' }
-        },
-
+        legend: { textStyle: { color: '#fff' } },
         pieSliceText: 'percentage'
     };
 
@@ -108,7 +103,6 @@ function drawLineChart() {
     let years = {};
 
     netflixData.forEach(item => {
-
         let y = Number(item.release_year);
         if (!y || y < 2000) return;
 
@@ -122,24 +116,22 @@ function drawLineChart() {
         ['Año', 'Películas', 'Series', { role: 'tooltip', p: { html: true } }]
     ];
 
-    Object.keys(years)
-        .sort((a, b) => a - b)
-        .forEach(y => {
+    Object.keys(years).sort((a, b) => a - b).forEach(y => {
 
-            const m = years[y].m;
-            const s = years[y].s;
+        const m = years[y].m;
+        const s = years[y].s;
 
-            dataArray.push([
-                Number(y),
-                m,
-                s,
-                `<div style="padding:8px;color:black">
-                    <b>${y}</b><br>
-                    🎬 ${m.toLocaleString()}<br>
-                    📺 ${s.toLocaleString()}
-                </div>`
-            ]);
-        });
+        dataArray.push([
+            Number(y),
+            m,
+            s,
+            `<div style="padding:8px;color:black">
+                <b>${y}</b><br>
+                🎬 ${m.toLocaleString()}<br>
+                📺 ${s.toLocaleString()}
+            </div>`
+        ]);
+    });
 
     const data = google.visualization.arrayToDataTable(dataArray);
 
@@ -147,10 +139,8 @@ function drawLineChart() {
         backgroundColor: 'transparent',
         colors: ['#E50914', '#bbbbbb'],
         chartArea: { width: '80%', height: '70%' },
-
         hAxis: { textStyle: { color: '#fff' } },
         vAxis: { textStyle: { color: '#fff' }, format: 'short' },
-
         tooltip: { isHtml: true },
         legend: { textStyle: { color: '#fff' } }
     };
@@ -164,106 +154,31 @@ function drawLineChart() {
 function drawCountryChart() {
 
     let topN = parseInt(document.getElementById("topN").value);
-    let count = {};
-
-    netflixData.forEach(item => {
-
-        if (!item.country) return;
-
-        item.country.split(",").forEach(c => {
-            let country = c.trim();
-            if (!country) return;
-            count[country] = (count[country] || 0) + 1;
-        });
-    });
-
-    let sorted = Object.entries(count)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, topN);
-
-    // 🔥 DEGRADADO REAL
-    let dataArray = [['País', 'Cantidad', { role: 'style' }]];
-
-    let colors = [
-        '#ff4d4d','#ff3333','#ff1a1a','#e50914',
-        '#cc0000','#b20710','#990000','#800000','#660000','#4d0000'
-    ];
-
-    sorted.forEach(([c, v], i) => {
-        dataArray.push([c, v, colors[i] || '#E50914']);
-    });
-
-    const data = google.visualization.arrayToDataTable(dataArray);
-
-    const options = {
-        backgroundColor: 'transparent',
-        legend: 'none',
-
-        chartArea: { left: 220, width: '60%' },
-
-        hAxis: { textStyle: { color: '#ccc' } },
-        vAxis: { textStyle: { color: '#fff', fontSize: 12 } }
-    };
-
-    new google.visualization.BarChart(
-        document.getElementById('countrychart')
-    ).draw(data, options);
-
-    let insight = document.querySelector("#countrychart + .insight");
-
-    if (sorted.length > 0) {
-        let top = sorted[0];
-        insight.innerText = `${top[0]} lidera con ${top[1].toLocaleString()} títulos.`;
-    }
-}
-
-// ================= GENRES =================
-function drawCountryChart() {
-
-    let topN = parseInt(document.getElementById("topN").value);
-
     let countryCount = {};
 
-    // Contar países
     netflixData.forEach(item => {
-
         if (!item.country) return;
 
         item.country.split(",").forEach(country => {
-
             let c = country.trim();
             if (!c) return;
-
-            if (!countryCount[c]) countryCount[c] = 0;
-
-            countryCount[c]++;
+            countryCount[c] = (countryCount[c] || 0) + 1;
         });
     });
 
-    // Ordenar (SIN reverse 🔥)
     let sortedCountries = Object.entries(countryCount)
         .sort((a, b) => b[1] - a[1])
         .slice(0, topN);
 
-    // 🎯 DEGRADADO NETFLIX (clave)
     const colorsGradient = [
-        '#ff4d4d',
-        '#ff1a1a',
-        '#E50914',
-        '#b20710',
-        '#800000',
-        '#660000',
-        '#4d0000',
-        '#330000',
-        '#1a0000',
-        '#0d0000'
+        '#ff4d4d','#ff1a1a','#E50914','#b20710',
+        '#800000','#660000','#4d0000','#330000'
     ];
 
     let dataArray = [['País', 'Cantidad', { role: 'style' }]];
 
     sortedCountries.forEach(([country, count], index) => {
-        let color = colorsGradient[index] || '#E50914';
-        dataArray.push([country, count, color]);
+        dataArray.push([country, count, colorsGradient[index] || '#E50914']);
     });
 
     var data = google.visualization.arrayToDataTable(dataArray);
@@ -271,55 +186,63 @@ function drawCountryChart() {
     var options = {
         backgroundColor: 'transparent',
         legend: 'none',
-
-        hAxis: {
-            textStyle: { color: 'white' },
-            gridlines: { color: '#333' }
-        },
-
-        vAxis: {
-            textStyle: { color: 'white' },
-            gridlines: { color: 'transparent' }
-        },
-
-        chartArea: {
-            left: 130,
-            width: '65%',
-            height: '70%'
-        },
-
-        bars: 'horizontal',
-
-        tooltip: {
-            textStyle: { color: 'white' }
-        },
-
-        animation: {
-            startup: true,
-            duration: 800,
-            easing: 'out'
-        }
+        chartArea: { left: 130, width: '65%', height: '70%' },
+        hAxis: { textStyle: { color: 'white' }, gridlines: { color: '#333' } },
+        vAxis: { textStyle: { color: 'white' } },
+        bars: 'horizontal'
     };
 
-    var chart = new google.visualization.BarChart(
+    new google.visualization.BarChart(
         document.getElementById('countrychart')
-    );
-
-    chart.draw(data, options);
-
-    // 🔥 INSIGHT DINÁMICO
-    let insight = document.querySelector("#countrychart + .insight");
-
-    if (sortedCountries.length > 0) {
-
-        let topCountry = sortedCountries[0][0];
-        let topValue = sortedCountries[0][1];
-
-        let totalTop = sortedCountries.reduce((sum, item) => sum + item[1], 0);
-
-        insight.innerText = `${topCountry} lidera la producción con ${topValue.toLocaleString()} títulos. El Top ${topN} concentra ${totalTop.toLocaleString()} contenidos, evidenciando una fuerte concentración geográfica del catálogo.`;
-    }
+    ).draw(data, options);
 }
+
+// ================= GENRES =================
+function drawGenreChart() {
+
+    let filter = document.getElementById("typeFilter").value;
+    let count = {};
+
+    netflixData.forEach(item => {
+
+        if (!item.listed_in) return;
+
+        if (filter === "Movie" && item.type !== "Movie") return;
+        if (filter === "TV Show" && item.type !== "TV Show") return;
+
+        item.listed_in.split(",").forEach(g => {
+            let genre = g.trim();
+            if (!genre) return;
+            count[genre] = (count[genre] || 0) + 1;
+        });
+    });
+
+    let sorted = Object.entries(count)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 7);
+
+    let dataArray = [['Género', 'Cantidad']];
+
+    sorted.forEach(([g, v]) => {
+        dataArray.push([g, v]);
+    });
+
+    var data = google.visualization.arrayToDataTable(dataArray);
+
+    var options = {
+        backgroundColor: 'transparent',
+        legend: 'none',
+        chartArea: { width: '70%', height: '65%' },
+        colors: ['#00e676'],
+        hAxis: { textStyle: { color: '#fff', slantedText: true } },
+        vAxis: { textStyle: { color: '#ccc' } }
+    };
+
+    new google.visualization.ColumnChart(
+        document.getElementById('genrechart')
+    ).draw(data, options);
+}
+
 // ================= EVENTS =================
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
 document.getElementById("topN").addEventListener("change", drawCountryChart);
