@@ -232,17 +232,44 @@ function drawGenreChart() {
     var options = {
         backgroundColor: 'transparent',
         legend: 'none',
+
         chartArea: { width: '70%', height: '65%' },
-        colors: ['#00e676'],
-        hAxis: { textStyle: { color: '#fff', slantedText: true } },
-        vAxis: { textStyle: { color: '#ccc' } }
+
+        // 🔥 COLOR NETFLIX (YA NO VERDE)
+        colors: ['#E50914'],
+
+        hAxis: {
+            textStyle: { color: '#fff', fontSize: 10 },
+            slantedText: true,
+            slantedTextAngle: 30
+        },
+
+        vAxis: {
+            textStyle: { color: '#ccc' }
+        }
     };
 
     new google.visualization.ColumnChart(
         document.getElementById('genrechart')
     ).draw(data, options);
-}
 
+    // 🔥 INSIGHT DINÁMICO RESTAURADO
+    let insight = document.getElementById("genreInsight");
+
+    if (sorted.length > 0) {
+        let topGenre = sorted[0][0];
+
+        if (filter === "Movie") {
+            insight.innerHTML = `Las películas están dominadas por el género <span class="highlight">${topGenre}</span>.`;
+        } 
+        else if (filter === "TV Show") {
+            insight.innerHTML = `Las series destacan principalmente en <span class="highlight">${topGenre}</span>.`;
+        } 
+        else {
+            insight.innerHTML = `A nivel general, el género <span class="highlight">${topGenre}</span> lidera el catálogo de Netflix.`;
+        }
+    }
+}
 // ================= EVENTS =================
 document.getElementById("typeFilter").addEventListener("change", drawGenreChart);
 document.getElementById("topN").addEventListener("change", drawCountryChart);
